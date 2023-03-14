@@ -97,4 +97,32 @@ class DFDLModelGenerator:
         annotation.append(appInfo)
 
         return annotation
+    def generateDfdlModel(self, messageSet):
+        # Create a new DFDL message model
+        dfdlModel = etree.Element("dfdl:defineFormat", nsmap=self.NSMAP)
+        dfdlModel.attrib["name"] = self.modelName
+        dfdlModel.attrib["targetNamespace"] = self.targetNamespace
+
+        # Add the DFDL properties and annotations
+        dfdlModel.append(self.createProperty("parser.maxOccursUnbounded", str(self.maxOccursUnbounded)))
+        dfdlModel.append(self.createProperty("parser.fieldNamingConvention", self.fieldNamingConvention))
+        dfdlModel.append(self.createProperty("output.textOutputCharacterEncoding", "UTF-8"))
+        dfdlModel.append(self.createProperty("output.checkConstraints", "true"))
+        dfdlModel.append(self.createProperty("output.escaping", "true"))
+        dfdlModel.append(self.createProperty("output.textPadCharacter", " "))
+        dfdlModel.append(self.createAnnotation("IBM Message Modeling Tool Version", self.getMessageSetVersion(messageSet)))
+        dfdlModel.append(self.createAnnotation("IBM Message Modeling Tool File", self.getMessageSetFilePath(messageSet)))
+        dfdlModel.append(self.createAnnotation("IBM Message Modeling Tool Generated DFDL Model", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
+        # Add the root element to the DFDL model
+        dfdlRootElement = self.createDfdlElement(
+            element=messageSet,
+            dfdlParentElement=etree.Element("dfdl:complexType", nsmap=self.NSMAP),
+            isRootElement=True,
+            elementName=self.rootElementName,
+        )
+        dfdlModel.append(dfdlRootElement)
+
+        # Return the DFDL model
+        return dfdlModel
 
