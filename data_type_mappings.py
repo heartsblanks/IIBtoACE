@@ -1,0 +1,17 @@
+MRM_TO_DFDL_DATA_TYPE_MAPPING = {
+    "xsd:string": "xs:string",
+    "xsd:boolean": "xs:boolean",
+    "xsd:dateTime": "xs:dateTime",
+    "xsd:decimal": "xs:decimal",
+    "xsd:double": "xs:double",
+    "xsd:float": "xs:float",
+    "xsd:integer": "xs:integer",
+    "xsd:long": "xs:long",
+    "xsd:int": "xs:int",
+    "xsd:short": "xs:short",
+    "xsd:byte": "xs:byte",
+    "xsd:unsignedLong": "xs:unsignedLong",
+    "xsd:unsignedInt": "xs:unsignedInt",
+    "xsd:unsignedShort": "xs:unsignedShort",
+    "xsd:unsignedByte": "xs:unsignedByte",
+}
