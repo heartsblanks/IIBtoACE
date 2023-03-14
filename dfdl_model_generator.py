@@ -1,7 +1,7 @@
 from lxml import etree
 
 
-class DFDLModelGenerator:
+class DfdlModelGenerator:
     NSMAP = {
         "dfdl": "http://www.ogf.org/dfdl/dfdl-1.0/",
         "xsd": "http://www.w3.org/2001/XMLSchema",
@@ -29,7 +29,7 @@ class DFDLModelGenerator:
         self.rootElementName = rootElementName
         self.namespacePrefix = namespacePrefix
 
-    def getFieldType(self, element):
+    def get_field_type(self, element):
         # Determine the DFDL data type for a message set element
         fieldType = self.mrmToDfdlDataTypeMapping.get(element.get("type"))
 
@@ -41,10 +41,10 @@ class DFDLModelGenerator:
 
         return fieldType
 
-    def addMessageSetElementToDfdlModel(self, element, dfdlParentElement):
+    def add_message_set_element_to_dfdl_model(self, element, dfdlParentElement):
         # Add a message set element to the DFDL model
         if element.tag == "xs:element":
-            dfdlElement = self.createDfdlElement(element)
+            dfdlElement = self.create_dfdl_element(element)
             dfdlParentElement.append(dfdlElement)
 
         elif element.tag == "xs:complexType":
@@ -55,16 +55,16 @@ class DFDLModelGenerator:
                 dfdlComplexType = dfdlParentElement
 
             for childElement in element:
-                self.addMessageSetElementToDfdlModel(childElement, dfdlComplexType)
+                self.add_message_set_element_to_dfdl_model(childElement, dfdlComplexType)
 
             if self.complexTypeName is not None:
                 dfdlParentElement.append(dfdlComplexType)
 
-    def createDfdlElement(self, element):
+    def create_dfdl_element(self, element):
         # Create a DFDL element from a message set element
         dfdlElement = etree.Element("dfdl:element", nsmap=self.NSMAP)
         dfdlElement.attrib["name"] = element.get("name")
-        dfdlElement.attrib["type"] = self.getFieldType(element)
+        dfdlElement.attrib["type"] = self.get_field_type(element)
 
         if element.get("minOccurs") is not None:
             dfdlElement.attrib["minOccurs"] = element.get("minOccurs")
@@ -75,7 +75,7 @@ class DFDLModelGenerator:
         if self.namespacePrefix is not None:
             dfdlElement.attrib[f"xmlns:{self.namespacePrefix}"] = self.targetNamespace
 
-        dfdlElement.append(self.createAnnotation("IBM Message Modeling Tool Element", element))
+        dfdlElement.append(self.create_annotation("IBM Message Modeling Tool Element", element))
         return dfdlElement
 
     def createProperty(self, propertyName, propertyValue):
@@ -97,32 +97,5 @@ class DFDLModelGenerator:
         annotation.append(appInfo)
 
         return annotation
-    def generateDfdlModel(self, messageSet):
-        # Create a new DFDL message model
-        dfdlModel = etree.Element("dfdl:defineFormat", nsmap=self.NSMAP)
-        dfdlModel.attrib["name"] = self.modelName
-        dfdlModel.attrib["targetNamespace"] = self.targetNamespace
 
-        # Add the DFDL properties and annotations
-        dfdlModel.append(self.createProperty("parser.maxOccursUnbounded", str(self.maxOccursUnbounded)))
-        dfdlModel.append(self.createProperty("parser.fieldNamingConvention", self.fieldNamingConvention))
-        dfdlModel.append(self.createProperty("output.textOutputCharacterEncoding", "UTF-8"))
-        dfdlModel.append(self.createProperty("output.checkConstraints", "true"))
-        dfdlModel.append(self.createProperty("output.escaping", "true"))
-        dfdlModel.append(self.createProperty("output.textPadCharacter", " "))
-        dfdlModel.append(self.createAnnotation("IBM Message Modeling Tool Version", self.getMessageSetVersion(messageSet)))
-        dfdlModel.append(self.createAnnotation("IBM Message Modeling Tool File", self.getMessageSetFilePath(messageSet)))
-        dfdlModel.append(self.createAnnotation("IBM Message Modeling Tool Generated DFDL Model", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-
-        # Add the root element to the DFDL model
-        dfdlRootElement = self.createDfdlElement(
-            element=messageSet,
-            dfdlParentElement=etree.Element("dfdl:complexType", nsmap=self.NSMAP),
-            isRootElement=True,
-            elementName=self.rootElementName,
-        )
-        dfdlModel.append(dfdlRootElement)
-
-        # Return the DFDL model
-        return dfdlModel
 
