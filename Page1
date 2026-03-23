@@ -230,3 +230,30 @@ One thing I’d tweak on the parent page is a tiny intro like this:
 This proposal is split into three related workstreams covering runtime isolation, operational control during patching, and shared component modularisation. The child pages below describe each proposal in more detail.
 
 That’ll tie the whole thing together nicely.
+
+
+Hi All,
+
+I would like to propose a set of architecture and operational improvements aimed at reducing cross-business impact, improving delivery safety, and increasing overall platform stability.
+
+The proposal is split into three related areas:
+
+1. Business-area-aligned Integration Servers  
+   Align Integration Servers to specific business areas to reduce cross-business impact during deployments, simplify rollback, and improve testing and support ownership.
+
+2. Controlled application flow management during DB / infrastructure patching  
+   Introduce a more controlled approach for patching activities that could affect processing. As an immediate step, I propose adding a manual change task for our team to stop affected flows/applications before patching begins and restart them after validation is complete.
+
+3. Shared library decomposition and ownership model  
+   Break down the current large shared library into smaller components with clearer boundaries, including separation of exception handling and movement of business-area-specific logic into domain-specific shared components.
+
+The overall objective is to reduce avoidable operational risk, improve testability, and make change implementation more predictable and contained.
+
+I have created Confluence pages for each area with more detail, including the current issues, proposed changes, expected benefits, and recommendations. I will include the links below for review.
+
+Please let me know your thoughts. I believe these changes would be good candidates for a phased approach, starting with targeted pilots and immediate operational controls where practical.
+
+Thanks,  
+[Your Name]
+
+
