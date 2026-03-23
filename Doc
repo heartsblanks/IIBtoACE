@@ -1,0 +1,463 @@
+Absolutely — here are 3 Confluence-ready child pages you can paste under your parent page.
+
+⸻
+
+Child Page 1: Proposal: Business-Area-Aligned Integration Server Model
+
+Purpose
+
+This page proposes aligning Integration Servers to specific business areas instead of hosting applications from multiple business areas across shared servers.
+
+The objective is to reduce cross-business impact during deployments, improve testability, simplify rollback and support, and create clearer ownership boundaries.
+
+Current State / Problem
+
+At present, applications belonging to different business areas are distributed across multiple Integration Servers, and each Integration Server may host applications from several business domains.
+
+This creates a number of operational and delivery challenges:
+	•	A deployment in one area may unintentionally impact another business area
+	•	Shared library changes carry wider risk than necessary
+	•	Testing is more difficult because unrelated applications coexist on the same servers
+	•	Rollback becomes more complicated when multiple business areas are mixed together
+	•	Troubleshooting and support ownership are less clear
+	•	Resource contention or instability on a shared server can affect unrelated services
+
+This architecture increases the blast radius of technical changes and makes controlled delivery more difficult.
+
+Proposed Change
+
+Move toward a model where Integration Servers are aligned to business areas.
+
+Under this approach:
+	•	applications for a given business area are deployed only to Integration Servers allocated to that business area
+	•	unrelated business areas do not share the same runtime wherever practical
+	•	business-domain isolation becomes a design principle for server allocation
+
+This does not necessarily require one server per application. The proposal is to group applications by business domain, not to maximize infrastructure count unnecessarily.
+
+Benefits
+
+Reduced blast radius
+
+A deployment issue, memory issue, shared component issue, or configuration issue in one business area is less likely to affect another.
+
+Safer testing
+
+Changes can be tested in an environment that reflects the target business domain without interference from unrelated applications.
+
+Easier impact assessment
+
+When evaluating a deployment or incident, the affected scope becomes easier to identify because the runtime is already aligned to one business area.
+
+Simpler rollback
+
+Rollback activity is more controlled because only one business area’s server group is involved.
+
+Better support ownership
+
+Support teams can identify ownership more easily when applications are grouped by business domain.
+
+Improved release flexibility
+
+Business areas can plan and execute releases more independently, without needing to coordinate around mixed server usage.
+
+Better operational stability
+
+An overloaded or unstable server will have a more contained effect, rather than disrupting multiple business areas.
+
+Easier capacity planning
+
+Infrastructure sizing and tuning can be better aligned to the usage profile of a specific business area.
+
+Better long-term architecture
+
+This is a step toward stronger domain separation, lower coupling, and clearer platform structure.
+
+Challenges / Risks
+
+Migration effort
+
+Re-aligning applications to business-area-specific servers will require planning, testing, and phased migration.
+
+Dependency discovery required
+
+Some applications may have dependencies that are not fully documented today, and these will need to be understood before migration.
+
+Potential increase in infrastructure footprint
+
+Depending on the target design, there may be some increase in infrastructure or operational overhead.
+
+Transitional complexity
+
+For some time, both the current mixed model and the new aligned model may need to coexist.
+
+Not every service may be isolated immediately
+
+Some technical or shared services may still need to remain cross-cutting until further design changes are made.
+
+What Needs to Change
+
+The following areas may need to be reviewed or updated:
+	•	current application-to-server mapping
+	•	target server allocation model by business area
+	•	deployment pipeline targets
+	•	environment naming and ownership conventions
+	•	monitoring and alerting aligned to business domains
+	•	support model and escalation ownership
+	•	capacity planning approach
+
+Suggested Approach
+
+A phased rollout is recommended rather than a full redesign in one step.
+
+Phase 1
+
+Identify business areas, current application placement, and server-sharing patterns.
+
+Phase 2
+
+Select one business area as a pilot and move it toward a dedicated Integration Server model.
+
+Phase 3
+
+Validate benefits, refine design standards, and document lessons learned.
+
+Phase 4
+
+Gradually extend the model to additional business areas.
+
+Open Questions
+	•	Which business area is the best candidate for pilot implementation?
+	•	Are there any hard technical dependencies preventing separation?
+	•	What is the minimum viable server isolation model we can adopt first?
+	•	Are there shared services that should remain central for now?
+	•	What operational standards should be defined before migration begins?
+
+Recommendation
+
+Adopt business-area alignment as a target architectural principle and begin with a pilot implementation for one business domain.
+
+⸻
+
+Child Page 2: Proposal: Controlled Application Flow Management During DB / Infrastructure Patching
+
+Purpose
+
+This page proposes a controlled operational process for database patching and other infrastructure changes that may interrupt or destabilize application processing.
+
+The objective is to reduce patch-related production risk by ensuring that application flows are safely stopped before patching begins, or that such work is performed within an agreed maintenance window.
+
+Current State / Problem
+
+Database patching and infrastructure patching may affect application stability, transaction processing, and connectivity.
+
+At present, there is a risk that:
+	•	application flows may continue to run while patching is in progress
+	•	transactions may fail mid-processing
+	•	recovery steps may be inconsistent across teams
+	•	patch-related outages may be harder to control and diagnose
+	•	the stop/start approach may depend too much on manual judgement
+
+This creates unnecessary risk during maintenance activity, especially where applications are sensitive to database availability or platform changes.
+
+Proposed Change
+
+For any DB patching or infrastructure patching that could affect application processing, one of the following controls should be mandatory:
+	•	the activity is performed in a defined maintenance window, or
+	•	the change includes a controlled pre-step to stop affected application flows before patching begins
+
+The stop/start process should be standardized and, where feasible, automated through a job or controlled operational task that stops specific applications or flows in a predictable way.
+
+Rather than attempting to solve this across all services immediately, the proposal is to begin with RMI / GMG, define the process and design, and then expand to additional services over time.
+
+Proposed Operating Process
+
+Pre-patch
+	•	identify which services or applications are affected
+	•	assess whether active flows must be stopped
+	•	execute a controlled stop process for the impacted applications
+	•	verify that processing has fully quiesced before patching begins
+
+During patching
+	•	perform patching only after safe stop is confirmed
+	•	monitor technical health and change progress
+	•	ensure no unexpected re-triggering of stopped flows
+
+Post-patch
+	•	restart applications or flows using a controlled procedure
+	•	validate connectivity and technical health
+	•	perform application-level checks
+	•	confirm normal processing has resumed
+
+Benefits
+
+Reduced risk of in-flight transaction failures
+
+Stopping flows before patching reduces the chance of incomplete or failed processing.
+
+Better operational control
+
+Patch execution becomes more structured and less dependent on ad hoc decisions.
+
+Improved auditability
+
+The change record can show clearly what was stopped, when it was stopped, and how recovery was performed.
+
+Faster and more predictable recovery
+
+A defined restart and validation sequence improves restoration quality.
+
+Lower incident risk
+
+Patch-related outages become easier to prevent and easier to manage.
+
+Reusable model for other services
+
+Starting with RMI / GMG allows the process to be proven and refined before broader rollout.
+
+Challenges / Risks
+
+Additional process overhead
+
+Stopping flows, validating state, and restarting services adds extra steps to the patching process.
+
+Automation effort
+
+Operational jobs or scripts may need to be designed and tested.
+
+Dependency knowledge required
+
+Teams need a clear understanding of service dependencies and stop/start sequencing.
+
+Business availability considerations
+
+If flows are stopped, there may be temporary unavailability that needs to be planned and communicated.
+
+What Needs to Change
+
+The following may need to be updated:
+	•	change management templates
+	•	patch runbooks
+	•	stop/start operational jobs
+	•	validation and health-check procedures
+	•	support handoff during maintenance activity
+	•	dependency documentation
+	•	maintenance window decision criteria
+
+Initial Scope
+
+Start with:
+	•	RMI
+	•	GMG
+
+For these services, define:
+	•	what must be stopped before patching
+	•	who approves the stop/start process
+	•	how safe stop is validated
+	•	how restart is performed
+	•	which post-patch checks are mandatory
+
+Suggested Approach
+
+Step 1
+
+Document current patching risks and identify where uncontrolled processing could occur.
+
+Step 2
+
+Design a standard stop/start process for RMI / GMG.
+
+Step 3
+
+Test the process in non-production where possible.
+
+Step 4
+
+Use the process in selected controlled changes.
+
+Step 5
+
+Refine and roll out gradually to additional services.
+
+Open Questions
+	•	Which patch types should always require flow stoppage?
+	•	Which services can be stopped independently, and which need coordinated shutdown?
+	•	Can stop/start be fully automated or should it remain semi-manual initially?
+	•	What evidence should be required before patching can begin?
+	•	What post-patch validation should be mandatory before reopening flows?
+
+Recommendation
+
+Define and pilot a controlled patching process for RMI / GMG, with stop/start controls as part of the change where patching could affect transaction processing.
+
+⸻
+
+Child Page 3: Proposal: Shared Library Decomposition and Ownership Model
+
+Purpose
+
+This page proposes restructuring the current shared library approach to reduce coupling, improve maintainability, and lower the risk of cross-business impact from common component changes.
+
+The objective is to separate truly common technical functionality from exception handling and business-area-specific logic, and to establish clearer ownership of shared components.
+
+Current State / Problem
+
+The current common shared library has grown into a large component containing multiple responsibilities, including:
+	•	exception handling
+	•	general common utilities
+	•	other reusable code
+	•	potentially business-area-specific logic
+
+This creates several problems:
+	•	a change in the shared library can affect many unrelated applications
+	•	regression testing becomes larger and more complex than necessary
+	•	ownership is not always clear
+	•	business-specific code can become mixed with platform-wide code
+	•	release planning becomes harder because too many applications depend on one large component
+	•	the common component becomes difficult to understand and maintain over time
+
+The current model increases coupling and makes even small changes carry a wider risk footprint.
+
+Proposed Change
+
+Decompose the current shared library into smaller, well-defined components with clear responsibility boundaries.
+
+The target direction is:
+	•	keep only truly common technical utilities in a central shared component
+	•	move exception handling into a separate dedicated component
+	•	move business-area-specific reusable code into business-area-specific shared libraries
+	•	define ownership and contribution rules for each shared component
+
+Target Structure (Illustrative)
+
+Example structure:
+	•	common-core
+Contains only generic technical utilities used across multiple domains
+	•	common-exception-handling
+Contains shared exception handling and related framework logic
+	•	shared-rmi
+Contains reusable logic specific to RMI
+	•	shared-gmg
+Contains reusable logic specific to GMG
+
+This is an example only, but it illustrates the principle that cross-cutting technical concerns and business-domain-specific reusable code should not be bundled into one oversized shared component.
+
+Benefits
+
+Reduced deployment risk
+
+A change to one business-area-specific shared component is less likely to affect unrelated applications.
+
+Better modularity
+
+Smaller components are easier to understand, test, and maintain.
+
+Clearer ownership
+
+Each shared component can have an identified owning team or business domain.
+
+Easier impact analysis
+
+It becomes easier to identify which applications are affected by a component change.
+
+Better release independence
+
+Business-area-specific changes can be planned and released with less platform-wide coordination.
+
+Lower coupling
+
+Applications depend only on the shared components they actually use.
+
+Better maintainability
+
+Developers and support teams can work with smaller, cleaner modules instead of one large mixed-responsibility library.
+
+Better governance
+
+A defined structure makes it easier to decide where new reusable code should belong.
+
+Challenges / Risks
+
+Refactoring effort
+
+Breaking up the current shared library will require dependency analysis, code movement, testing, and migration planning.
+
+Migration complexity
+
+Existing applications will need to be updated gradually to consume the new component structure.
+
+Versioning considerations
+
+Once components are split, versioning and compatibility need to be managed carefully.
+
+Temporary coexistence
+
+Old and new component structures may coexist during transition, which may add short-term complexity.
+
+Governance must be enforced
+
+Without agreed standards, new code may again accumulate in the wrong place.
+
+What Needs to Change
+
+The following areas may need review:
+	•	shared library structure
+	•	repository layout
+	•	build and dependency management
+	•	versioning strategy
+	•	ownership model
+	•	coding standards for what qualifies as “common”
+	•	migration plan for existing consumers
+	•	regression and compatibility testing approach
+
+Suggested Design Principles
+
+The following principles are recommended:
+	•	enterprise-wide shared libraries should contain only truly common technical logic
+	•	cross-cutting technical concerns should be isolated from business logic
+	•	business-area-specific reusable code should sit in business-area-specific components
+	•	each shared component should have clear ownership
+	•	changes to shared components should require impact analysis and appropriate test evidence
+
+Suggested Approach
+
+Phase 1
+
+Analyse the current shared library contents and classify code into:
+	•	truly common
+	•	exception handling
+	•	business-area-specific logic
+	•	unclear / mixed ownership
+
+Phase 2
+
+Define target components and ownership.
+
+Phase 3
+
+Extract one or two clearly separable modules first, such as exception handling or one business-specific reusable area.
+
+Phase 4
+
+Migrate applications gradually to the new structure.
+
+Phase 5
+
+Retire the legacy oversized shared library over time, or reduce it to true core functionality only.
+
+Open Questions
+	•	Which parts of the current library are truly enterprise-wide?
+	•	Which code is actually business-area-specific today?
+	•	Should exception handling be fully centralised in its own component?
+	•	What ownership model should be assigned to each shared component?
+	•	How should versioning and compatibility be controlled during migration?
+
+Recommendation
+
+Begin a structured decomposition of the current shared library, starting with separation of exception handling and identification of business-area-specific logic that should move into domain-owned shared components.
+
+⸻
+
+If you want, next I can give you:
+	1.	a short executive-summary version for management, or
+	2.	a more polished senior-management tone version of these same pages.
