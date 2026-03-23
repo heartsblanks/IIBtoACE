@@ -1,8 +1,8 @@
-Here you go — updated Page 1 with a stronger Recommendation section.
+Absolutely — here’s the final polished set of all 3 child pages, matched in tone, length, and structure so they feel consistent under the parent page.
 
 ⸻
 
-Proposal: Business-Area-Aligned Integration Server Model
+Page 1: Proposal: Business-Area-Aligned Integration Server Model
 
 Purpose
 
@@ -75,4 +75,158 @@ This change should be treated as a risk-reduction and operational-stability impr
 
 ⸻
 
-If you want, I’ll now rewrite Page 2 in this exact same style so all child pages look consistent.
+Page 2: Proposal: Controlled Application Flow Management During DB / Infrastructure Patching
+
+Purpose
+
+This proposal recommends introducing a controlled process for database and infrastructure patching activities that could interrupt or destabilise application processing.
+
+The aim is to reduce operational risk by ensuring that affected flows are stopped before patching begins and restarted only after validation is complete, or that such activity is carried out within an agreed maintenance window.
+
+Current Issue
+
+If flows remain active during patching, the system may continue processing until failures occur. This can trigger repeated retries, temporary flow stoppages, and multiple recovery attempts before the flow is eventually stopped permanently.
+
+This is unnecessary and creates avoidable operational disruption. Instead of preventing failures before patching begins, the system reacts after failures have already started.
+
+As a result:
+	•	transactions may fail repeatedly during patching
+	•	retry behaviour creates unnecessary noise and alerts
+	•	recovery becomes more complicated than necessary
+	•	handling is reactive rather than controlled
+
+Why This Matters
+
+Repeated retries create unnecessary disruption
+
+If flows are not stopped before patching begins, the system may continue attempting processing even when underlying services are unavailable or unstable. This leads to avoidable failures before the flow is eventually stopped.
+
+Recovery becomes harder
+
+Repeated failures during patching make recovery more complex because teams may need to assess incomplete transactions and inconsistent processing state.
+
+Operational handling becomes inconsistent
+
+Without a standard stop/start approach, patching activity may be handled differently each time, which increases delivery risk and reduces confidence in the process.
+
+Proposed Change
+
+For patching activities that could affect application processing, one of the following controls should apply:
+	•	the activity should be performed within a defined maintenance window, or
+	•	affected flows should be stopped in a controlled way before patching begins and restarted only after validation is complete
+
+The initial focus should begin with ABC / XYZ, where the process can be defined and applied consistently before expanding to other services.
+
+Benefits
+	•	reduced risk of repeated transaction failures during patching
+	•	avoidance of unnecessary retry and temporary stop/start cycles
+	•	safer and more controlled patch execution
+	•	simpler recovery after maintenance activity
+	•	more consistent change handling
+
+What Would Need to Change
+	•	change templates for patching activities
+	•	patch runbooks and operational procedures
+	•	validation checks before and after patching
+	•	service dependency documentation
+	•	ownership for stopping and restarting impacted flows
+
+Immediate Next Step
+
+As an immediate control, a manual change task should be added for our team to stop affected flows or applications before patching begins and restart them after patch validation is complete.
+
+This provides a practical short-term control while the broader process is being defined.
+
+Recommendation
+
+It is recommended that patching activities that could affect application processing should not begin while affected flows remain active.
+
+As an immediate next step, a manual change task should be introduced for our team to stop and restart relevant flows/applications during patching, starting with ABC / XYZ.
+
+This change should be treated as an operational-control and risk-reduction improvement aimed at making patching activity safer and more predictable.
+
+⸻
+
+Page 3: Proposal: Shared Library Decomposition and Ownership Model
+
+Purpose
+
+This proposal recommends restructuring the current shared library model to reduce coupling, improve maintainability, and limit cross-business impact from shared component changes.
+
+The aim is to separate truly common technical functionality from exception handling and business-area-specific logic, and to establish clearer ownership of shared components.
+
+Current Issue
+
+The current shared library has evolved into a large multi-purpose component and now contains multiple responsibilities, including common utilities, exception handling, and business-area-specific code.
+
+This increases operational and delivery risk unnecessarily. A change in the shared library can affect many applications, including those outside the intended business area.
+
+As a result:
+	•	change impact becomes harder to assess
+	•	testing scope becomes wider than necessary
+	•	release coordination becomes more difficult
+	•	ownership is less clear
+	•	business-specific logic is mixed with technical common code
+
+Why This Matters
+
+Changes have a wider impact than necessary
+
+When too much logic sits in one shared library, even small changes can affect multiple applications and business areas.
+
+Testing becomes broader and slower
+
+Because many applications depend on the same shared component, more regression confidence is needed for each change.
+
+Ownership and boundaries are unclear
+
+When technical utilities, exception handling, and business-specific logic are all grouped together, it becomes harder to decide who owns what and where new code should be placed.
+
+Proposed Change
+
+Move toward a more modular shared library model.
+
+In this model:
+	•	truly common technical utilities remain in a central shared component
+	•	exception handling is separated into its own component
+	•	business-area-specific reusable code is moved into business-area-specific shared libraries
+	•	ownership is defined for each shared component
+
+This would reduce unnecessary dependency on a single large shared library.
+
+Benefits
+	•	reduced cross-business impact from shared library changes
+	•	easier impact analysis
+	•	safer and more targeted testing
+	•	clearer ownership of shared components
+	•	better separation between technical common code and business-specific code
+	•	improved long-term maintainability
+
+Challenges
+	•	refactoring effort will be required
+	•	current library usage and dependencies need to be understood
+	•	migration will need to be phased
+	•	versioning and ownership standards will need to be defined
+
+What Would Need to Change
+	•	shared library structure
+	•	dependency management
+	•	ownership model
+	•	coding standards for what qualifies as common
+	•	migration plan for existing consumers
+
+Recommendation
+
+It is recommended that the current shared library be reviewed and gradually decomposed into smaller components with clearer responsibility boundaries.
+
+The initial focus should be on separating exception handling from the main shared library and identifying business-area-specific code that should move into domain-specific shared components.
+
+This change should be treated as a maintainability, testability, and risk-reduction improvement.
+
+⸻
+
+One thing I’d tweak on the parent page is a tiny intro like this:
+
+This proposal is split into three related workstreams covering runtime isolation, operational control during patching, and shared component modularisation. The child pages below describe each proposal in more detail.
+
+That’ll tie the whole thing together nicely.
