@@ -1,0 +1,73 @@
+
+⸻
+
+Proposal: Controlled Application Flow Management During DB / Infrastructure Patching
+
+Purpose
+
+This proposal recommends introducing a controlled process for database and infrastructure patching activities that could interrupt or destabilise application processing.
+
+The aim is to reduce operational risk by ensuring that affected flows are stopped before patching begins and restarted only after validation is complete, or that such activity is carried out within an agreed maintenance window.
+
+Current Issue
+
+If flows remain active during patching, the system may continue processing until failures occur. This can trigger repeated retries, temporary flow stoppages, and multiple recovery attempts before the flow is eventually stopped permanently.
+
+This is unnecessary and creates avoidable operational disruption. Instead of preventing failures before patching begins, the system reacts after failures have already started.
+
+As a result:
+	•	transactions may fail repeatedly during patching
+	•	retry behaviour creates unnecessary noise and alerts
+	•	recovery becomes more complicated than necessary
+	•	handling is reactive rather than controlled
+
+Why This Matters
+
+Repeated retries create unnecessary disruption
+
+If flows are not stopped before patching begins, the system may continue attempting processing even when underlying services are unavailable or unstable. This leads to avoidable failures before the flow is eventually stopped.
+
+Recovery becomes harder
+
+Repeated failures during patching make recovery more complex because teams may need to assess incomplete transactions and inconsistent processing state.
+
+Operational handling becomes inconsistent
+
+Without a standard stop/start approach, patching activity may be handled differently each time, which increases delivery risk and reduces confidence in the process.
+
+Proposed Change
+
+For patching activities that could affect application processing, one of the following controls should apply:
+	•	the activity should be performed within a defined maintenance window, or
+	•	affected flows should be stopped in a controlled way before patching begins and restarted only after validation is complete
+
+The initial focus should begin with ABC / XYZ, where the process can be defined and applied consistently before expanding to other services.
+
+Benefits
+	•	reduced risk of repeated transaction failures during patching
+	•	avoidance of unnecessary retry and temporary stop/start cycles
+	•	safer and more controlled patch execution
+	•	simpler recovery after maintenance activity
+	•	more consistent change handling
+
+What Would Need to Change
+	•	change templates for patching activities
+	•	patch runbooks and operational procedures
+	•	validation checks before and after patching
+	•	service dependency documentation
+	•	ownership for stopping and restarting impacted flows
+
+Immediate Next Step
+
+As an immediate control, a manual change task should be added for our team to stop affected flows or applications before patching begins and restart them after patch validation is complete.
+
+This provides a practical short-term control while the broader process is being defined.
+
+Recommendation
+
+It is recommended that patching activities that could affect application processing should not begin while affected flows remain active.
+
+As an immediate next step, a manual change task should be introduced for our team to stop and restart relevant flows/applications during patching, starting with ABC / XYZ.
+
+⸻
+
