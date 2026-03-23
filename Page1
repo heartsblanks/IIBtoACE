@@ -1,0 +1,78 @@
+Here you go — updated Page 1 with a stronger Recommendation section.
+
+⸻
+
+Proposal: Business-Area-Aligned Integration Server Model
+
+Purpose
+
+This proposal recommends aligning Integration Servers to specific business areas instead of hosting multiple business areas on the same server.
+
+The aim is to reduce cross-business impact during deployments, improve testing, and simplify rollback and support.
+
+Current Issue
+
+Today, applications from different business areas share Integration Servers.
+
+This increases operational risk unnecessarily. A change made for one business area can affect another because they share the same runtime environment, deployment activity, and operational handling.
+
+As a result:
+	•	deployment impact is harder to contain
+	•	testing scope becomes wider than necessary
+	•	rollback can affect other business areas
+	•	incident assessment and support become slower
+
+Why This Matters
+
+Testing becomes harder
+
+When unrelated applications are on the same server, a change cannot always be validated only within its own business scope. Server restarts, shared components, and runtime effects can also impact co-hosted applications, which means broader regression testing is often needed.
+
+Rollback becomes harder
+
+If a deployment needs to be rolled back, the rollback may also affect shared runtime state or components used by other business areas on the same server. This makes rollback decisions slower and riskier.
+
+Proposed Change
+
+Move toward a model where Integration Servers are aligned to business areas.
+
+In this model:
+	•	applications of the same business area are grouped together
+	•	unrelated business areas do not share the same Integration Server wherever practical
+	•	server ownership becomes more aligned to business ownership
+
+This does not mean one server per application. It means reducing cross-business sharing at runtime.
+
+Benefits
+	•	reduced blast radius during deployments
+	•	safer and more targeted testing
+	•	simpler rollback
+	•	clearer ownership and support boundaries
+	•	easier impact analysis during incidents
+	•	better release independence between business areas
+	•	improved long-term architecture
+
+Challenges
+	•	migration effort will be required
+	•	current dependencies need to be understood
+	•	some increase in infrastructure or operational overhead may be needed
+	•	transition will need to be phased
+
+What Would Need to Change
+	•	application-to-server allocation
+	•	deployment targets
+	•	environment design and naming
+	•	monitoring and support ownership
+	•	dependency mapping and migration planning
+
+Recommendation
+
+It is recommended that business-area alignment be adopted as the target direction for Integration Server allocation.
+
+A phased approach should be used, starting with one suitable business area as a pilot. This would allow the target model, migration approach, and operational benefits to be validated before broader rollout.
+
+This change should be treated as a risk-reduction and operational-stability improvement rather than simply an infrastructure reorganisation.
+
+⸻
+
+If you want, I’ll now rewrite Page 2 in this exact same style so all child pages look consistent.
